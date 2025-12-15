@@ -12,7 +12,8 @@ class Expense extends Model
         'amount',
         'category_id',
         'payment_method_id',
-        'expense_date'
+        'expense_date',
+        'user_id'
     ];
 
     protected $casts = [
@@ -28,6 +29,11 @@ class Expense extends Model
     public function paymentMethod()
     {
         return $this->belongsTo(PaymentMethod::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopeFilterByDateRange($query, $range)

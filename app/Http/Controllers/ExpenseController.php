@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use App\Models\Category;
 use App\Models\PaymentMethod;
+use App\Exports\ExpensesExport;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ExpenseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Expense::with(['category', 'paymentMethod']);
+        $query = Expense::with(['category', 'paymentMethod'])->where('user_id', auth()->id());
         
         if ($request->has('filter') && $request->filter) {
             $query->filterByDateRange($request->filter);
@@ -44,7 +46,10 @@ class ExpenseController extends Controller
             'expense_date' => 'required|date'
         ]);
 
-        Expense::create($request->all());
+        $data = $request->all();
+        $data['user_id'] = auth()->id();
+        
+        Expense::create($data);
 
         return redirect()->route('expenses.index')->with('success', 'Expense created successfully.');
     }
@@ -56,6 +61,10 @@ class ExpenseController extends Controller
 
     public function edit(Expense $expense)
     {
+        if ($expense->user_id !== auth()->id()) {
+            abort(403);
+        }
+        
         $categories = Category::all();
         $paymentMethods = PaymentMethod::all();
         
@@ -64,6 +73,10 @@ class ExpenseController extends Controller
 
     public function update(Request $request, Expense $expense)
     {
+        if ($expense->user_id !== auth()->id()) {
+            abort(403);
+        }
+        
         $request->validate([
             'description' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0.01',
@@ -79,8 +92,17 @@ class ExpenseController extends Controller
 
     public function destroy(Expense $expense)
     {
+        if ($expense->user_id !== auth()->id()) {
+            abort(403);
+        }
+        
         $expense->delete();
 
         return redirect()->route('expenses.index')->with('success', 'Expense deleted successfully.');
+    }
+
+    public function export()
+    {
+        return Excel::download(new ExpensesExport(auth()->id()), 'my-expenses-' . date('Y-m-d') . '.xlsx');
     }
 }

@@ -12,24 +12,30 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalExpenses = Expense::sum('amount');
-        $monthlyExpenses = Expense::whereMonth('expense_date', now()->month)
+        $userId = auth()->id();
+        
+        $totalExpenses = Expense::where('user_id', $userId)->sum('amount');
+        $monthlyExpenses = Expense::where('user_id', $userId)
+                                 ->whereMonth('expense_date', now()->month)
                                  ->whereYear('expense_date', now()->year)
                                  ->sum('amount');
         
         $expensesByCategory = Expense::select('categories.name', DB::raw('SUM(expenses.amount) as total'))
                                    ->join('categories', 'expenses.category_id', '=', 'categories.id')
+                                   ->where('expenses.user_id', $userId)
                                    ->groupBy('categories.id', 'categories.name')
                                    ->orderBy('total', 'desc')
                                    ->get();
         
         $expensesByPaymentMethod = Expense::select('payment_methods.name', DB::raw('SUM(expenses.amount) as total'))
                                         ->join('payment_methods', 'expenses.payment_method_id', '=', 'payment_methods.id')
+                                        ->where('expenses.user_id', $userId)
                                         ->groupBy('payment_methods.id', 'payment_methods.name')
                                         ->orderBy('total', 'desc')
                                         ->get();
         
         $recentExpenses = Expense::with(['category', 'paymentMethod'])
+                                ->where('user_id', $userId)
                                 ->orderBy('expense_date', 'desc')
                                 ->limit(5)
                                 ->get();
