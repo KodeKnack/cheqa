@@ -5,9 +5,14 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1><i class="bi bi-receipt"></i> Expenses</h1>
-    <a href="{{ route('expenses.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Add Expense
-    </a>
+    <div class="d-flex gap-2">
+        <a href="{{ route('expenses.export') }}" class="btn btn-success">
+            <i class="bi bi-download"></i> Export Excel
+        </a>
+        <a href="{{ route('expenses.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add Expense
+        </a>
+    </div>
 </div>
 
 <div class="row mb-4">
@@ -50,7 +55,7 @@
                         @foreach($expenses as $expense)
                         <tr>
                             <td>{{ $expense->description }}</td>
-                            <td class="fw-bold text-danger">${{ number_format($expense->amount, 2) }}</td>
+                            <td class="fw-bold text-danger">R{{ number_format($expense->amount, 2) }}</td>
                             <td>
                                 <span class="badge bg-secondary">{{ $expense->category->name }}</span>
                             </td>
@@ -82,7 +87,7 @@
 
     <div class="d-flex justify-content-between align-items-center mt-4">
         <div>
-            <strong>Total: ${{ number_format($expenses->sum('amount'), 2) }}</strong>
+            <strong>Total: R{{ number_format($expenses->sum('amount'), 2) }}</strong>
         </div>
         {{ $expenses->links() }}
     </div>

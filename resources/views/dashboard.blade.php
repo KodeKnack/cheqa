@@ -3,14 +3,19 @@
 @section('title', 'Dashboard - Cheqa')
 
 @section('content')
+<div class="mb-4">
+    <h2 class="text-primary">Hi {{ Auth::user()->name }}, welcome to your spending dashboard!</h2>
+    <p class="text-muted">Here's an overview of your personal expenses</p>
+</div>
+
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card bg-primary text-white">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h6 class="card-title">Total Expenses</h6>
-                        <h2 class="mb-0">${{ number_format($totalExpenses, 2) }}</h2>
+                        <h6 class="card-title">Your Total Expenses</h6>
+                        <h2 class="mb-0">R{{ number_format($totalExpenses, 2) }}</h2>
                     </div>
                     <div class="align-self-center">
                         <i class="bi bi-wallet2 display-4"></i>
@@ -24,8 +29,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h6 class="card-title">This Month</h6>
-                        <h2 class="mb-0">${{ number_format($monthlyExpenses, 2) }}</h2>
+                        <h6 class="card-title">Your Monthly Expenses</h6>
+                        <h2 class="mb-0">R{{ number_format($monthlyExpenses, 2) }}</h2>
                     </div>
                     <div class="align-self-center">
                         <i class="bi bi-calendar-month display-4"></i>
@@ -40,14 +45,14 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-tags"></i> Expenses by Category</h5>
+                <h5 class="mb-0"><i class="bi bi-tags"></i> Your Expenses by Category</h5>
             </div>
             <div class="card-body">
                 @if($expensesByCategory->count() > 0)
                     @foreach($expensesByCategory as $category)
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span>{{ $category->name }}</span>
-                            <span class="fw-bold">${{ number_format($category->total, 2) }}</span>
+                            <span class="fw-bold">R{{ number_format($category->total, 2) }}</span>
                         </div>
                         <div class="progress mb-3" style="height: 8px;">
                             <div class="progress-bar" style="width: {{ ($category->total / $totalExpenses) * 100 }}%"></div>
@@ -63,14 +68,14 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-credit-card"></i> Expenses by Payment Method</h5>
+                <h5 class="mb-0"><i class="bi bi-credit-card"></i> Your Expenses by Payment Method</h5>
             </div>
             <div class="card-body">
                 @if($expensesByPaymentMethod->count() > 0)
                     @foreach($expensesByPaymentMethod as $method)
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <span>{{ $method->name }}</span>
-                            <span class="fw-bold">${{ number_format($method->total, 2) }}</span>
+                            <span class="fw-bold">R{{ number_format($method->total, 2) }}</span>
                         </div>
                         <div class="progress mb-3" style="height: 8px;">
                             <div class="progress-bar bg-info" style="width: {{ ($method->total / $totalExpenses) * 100 }}%"></div>
@@ -89,7 +94,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Expenses</h5>
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> Your Recent Expenses</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -107,7 +112,7 @@
                             @foreach($recentExpenses as $expense)
                             <tr>
                                 <td>{{ $expense->description }}</td>
-                                <td class="fw-bold text-danger">${{ number_format($expense->amount, 2) }}</td>
+                                <td class="fw-bold text-danger">R{{ number_format($expense->amount, 2) }}</td>
                                 <td><span class="badge bg-secondary">{{ $expense->category->name }}</span></td>
                                 <td><span class="badge bg-info">{{ $expense->paymentMethod->name }}</span></td>
                                 <td>{{ $expense->expense_date->format('M d, Y') }}</td>
